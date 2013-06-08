@@ -63,8 +63,6 @@ int main(int argc, const char * argv[])
             // R - красный
         }
     }
-    //printf("%d %d %d \n%d %d %d",arrImage[0][0][2],arrImage[0][0][1],arrImage[0][0][0],arrImage[1][1][2],arrImage[1][1][1],arrImage[1][1][0]);
-    
     
     Cartoon::cartoonFilter(arrImage, image->width, image->height);
     

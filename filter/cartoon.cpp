@@ -14,7 +14,6 @@
         
 float ** Cartoon::GaussianFunction(float sigma,int radius)
 {
-    printf("\n");
     int size=2*radius+1;
     float coeff = 1.0f/(2.0f*(float)M_PI*sigma*sigma);
     float ** GaussianMatrix=new float*[size];
@@ -24,9 +23,7 @@ float ** Cartoon::GaussianFunction(float sigma,int radius)
         for (int j = 0; j < size; j++)
         {
             GaussianMatrix[i][j] = coeff * (float)exp(-(pow(fabs(size/2-i),2)+pow(fabs(size/2-j),2))/(2*sigma*sigma));
-            printf("%f ",GaussianMatrix[i][j]);
         }
-        printf("\n");
     }
     return GaussianMatrix;
 }
@@ -48,8 +45,8 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width) {
 }
 
 void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
-    int maskRadius=40;
-    double threshold=0.9;
+    int maskRadius=3;
+    double threshold=1.0;
     float ramp=0.2;
     
     float ** GaussianMatrix=GaussianFunction(0.9,maskRadius);
@@ -58,7 +55,7 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     
     // Проход по строкам
     
-    for (int i=0; i<width; i++) {
+    /*for (int i=0; i<width; i++) {
         for (int x=i-maskRadius-1; x<i+maskRadius; x++) {
             if (x>=0 && x<width) {
                 for (int j=0; j<height; j++) {
@@ -82,6 +79,67 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
                 }
             }
         }
+    }*/
+    
+    //Добавить прохождение до конца
+    
+    for(int x = 0; x < width; x++) {
+        for(int y = 0; y < height; y++){
+            
+            int i = 0;
+            double sumR = 0, sumB = 0, sumG = 0;
+            
+            for(int iX = x; i < maskRadius; ++i, ++iX){
+                if  (iX==width) break;
+                int j = 0;
+                for(int iY = y; j < maskRadius; ++j, ++iY){
+                    if (iY==height) break;
+                    sumR += arrImage[iX][iY][2];
+                    sumB += arrImage[iX][iY][1];
+                    sumG += arrImage[iX][iY][0];
+                }
+            }
+            
+            
+            sumR /= maskRadius*maskRadius;
+            sumB /= maskRadius*maskRadius;
+            sumG /= maskRadius*maskRadius;
+            
+            double red = arrImage[x][y][2],
+            blue = arrImage[x][y][1],
+            green = arrImage[x][y][0];
+            
+            double koeffR = red / sumR,
+            koeffB = blue / sumB,
+            koeffG = green / sumG;
+            
+            if(koeffR < threshold) {
+                ramp=0.01;
+                red *= ((ramp - fmin(ramp,(threshold - koeffR)))/ramp);
+            }
+            
+            
+            if(koeffB < threshold) {
+                ramp=0.02;
+                blue *= ((ramp - fmin(ramp,(threshold - koeffB)))/ramp);
+            }
+                
+            
+            if(koeffG < threshold) {
+                ramp=0.03;
+                green *= ((ramp - fmin(ramp,(threshold - koeffG)))/ramp);
+            }
+                
+            
+            arrImage[x][y][2]=(int)red;
+            arrImage[x][y][1]=(int)blue;
+            arrImage[x][y][0]=(int)green;
+            
+            //if (iX>100) break;
+            
+            
+            
+        }
     }
     
 }
@@ -89,11 +147,11 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
 
 
 void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {
-    int maskRadius=40;
+    int maskRadius=20;
     double threshold=0.9;
     float ramp=0.15;
     
-    int center = maskRadius / 2 + 1;
+    //Добавить прохождение до конца
     
     for(int x = 0; x < width; x++) {
         for(int y = 0; y < height; y++){
