@@ -13,9 +13,9 @@
 
 CartoonParameters Cartoon::parameters =
 {
-    5,
-    0.9,
-    0.15
+    5,      /* maskRadius   */
+    0.9,    /* threshold    */
+    0.15    /* ramp         */ 
 };
 
 float ** Cartoon::GaussianFunction(float sigma,int radius)
@@ -52,9 +52,9 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
 }
 
 void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
-    int maskRadius=3;
-    double threshold=1.0;
-    float ramp=0.2;
+    int maskRadius=parameters.maskRadius;
+    float threshold=parameters.threshold;
+    float ramp=parameters.ramp;
     
     float ** GaussianMatrix=GaussianFunction(0.9,maskRadius);
     
@@ -154,9 +154,9 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
 
 
 void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {
-    int maskRadius=20;
-    double threshold=0.9;
-    float ramp=0.15;
+    int maskRadius=parameters.maskRadius;
+    float threshold=parameters.threshold;
+    float ramp=parameters.ramp;
     
     //Добавить прохождение до конца
     

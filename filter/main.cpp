@@ -11,26 +11,64 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "cartoon.h"
 
-//#include <opencv/cvaux.hpp>
+#define COUNT_OF_CHANNELS   3 // Количество каналов цветов
 
-//using namespace filter;
+// Работа с изображением при помощи OpenCV
+
+// Получить массив с цветами всех пикселей изображения BGR
+
+int *** getImageArray (IplImage * image)
+{
+    int *** arrImage=new int **[image->height]; // Массив с цветами, который получается на выходе
+    
+    for( int y=0; y<image->height; y++ ) {
+        char * ptr = (char *) (image->imageData + y * image->widthStep);
+        arrImage[y]=new int * [image->width];
+        for( int x=0; x<image->width; x++ ) {
+            arrImage[y][x]=new int[COUNT_OF_CHANNELS];
+            
+            for (int i=0; i<COUNT_OF_CHANNELS; i++) { // Получение цветов из всех каналов
+                arrImage[y][x][i]=(int)ptr[COUNT_OF_CHANNELS*x+i];
+                if (arrImage[y][x][i]<0) arrImage[y][x][i]+=256;
+            }
+        }
+    }
+    
+    return arrImage;
+}
+
+// Собрать новое изображение из обработанного массива с цветами всех пикселей изображения BGR
+
+IplImage * collectImageFromArray (IplImage * image, int *** arrImage)
+{
+    IplImage * newImage = 0;
+    // клонирование изображения
+    newImage = cvCloneImage(image);
+    
+    for( int y=0; y<newImage->height; y++ ) {
+        char * ptr = (char *) (newImage->imageData + y * newImage->widthStep);
+        for (int x=0; x<newImage->width; x++) {
+            for (int i=0; i<COUNT_OF_CHANNELS; i++) {
+                ptr[COUNT_OF_CHANNELS*x+i]=(char)(arrImage[y][x][i]);
+                if (ptr[COUNT_OF_CHANNELS*x+i]>127) ptr[COUNT_OF_CHANNELS*x+i]-=256;
+            }
+        }
+    }
+    
+    return newImage;
+}
+
 
 int main(int argc, const char * argv[])
 {
-    IplImage * image = 0;       // Исходное изображение, представленное структурой из OpenCV
-    IplImage * imageCopy = 0;   // Копия исходного изображения
+    IplImage * image = 0;  // Исходное изображение, представленное структурой из OpenCV
     
     const char * filename = argc == 2 ? argv[1] : "/users/madmoron/Desktop/img.jpg";
     
     // получаем картинку
     image = cvLoadImage(filename,1);
     
-    if (!image) return -1;
-    
-    // клонируем картинку
-    imageCopy = cvCloneImage(image);
-    
-    //assert( imageCopy != 0 );
+    if (!image) return -1; // Если изображение не найдено, то возвращается код ошибки
     
     /* отображание окна с изображением
      // окно для отображения картинки
@@ -43,55 +81,22 @@ int main(int argc, const char * argv[])
      cvWaitKey(0);
      */
     
-    // пробегаемся по всем пикселям изображения
-    int *** arrImage=new int **[image->height];
-    for( int y=0; y<image->height; y++ ) {
-        char * ptr = (char *) (image->imageData + y * image->widthStep);
-        arrImage[y]=new int * [image->width];
-        for( int x=0; x<image->width; x++ ) {
-            arrImage[y][x]=new int[3];
-            // 3 канала
-            arrImage[y][x][0]=(int)ptr[3*x];
-            if (arrImage[y][x][0]<0) arrImage[y][x][0]+=256;
-            //printf("%d",(int)ptr[3*x]);
-            // B - синий
-            arrImage[y][x][1]=(int)ptr[3*x+1];
-            if (arrImage[y][x][1]<0) arrImage[y][x][1]+=256;
-            // G - зелёный
-            arrImage[y][x][2] = (int)ptr[3*x+2];
-            if (arrImage[y][x][2]<0) arrImage[y][x][2]+=256;
-            // R - красный
-        }
-    }
+    // получение массива с цветами всех пикселей
+    int *** arrImage = getImageArray(image);
     
-    Cartoon::cartoonFilter(arrImage, image->width, image->height);
+    // применение фильтра
+    Cartoon::parameters={4,0.9,0.2};
+    Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
     
-    // собрать новое изображение
-    for( int y=0; y<imageCopy->height; y++ ) {
-        char * ptr = (char *) (imageCopy->imageData + y * imageCopy->widthStep);
-        for (int x=0; x<imageCopy->width; x++) {
-            ptr[3*x]=(char)(arrImage[y][x][0]);     // blue
-            if (ptr[3*x]>127) ptr[3*x]-=256;
-            ptr[3*x+1]=(char)(arrImage[y][x][1]);   // green
-            if (ptr[3*x+1]>127) ptr[3*x+1]-=256;
-            ptr[3*x+2]=(char)(arrImage[y][x][2]);   // red
-            if (ptr[3*x+2]>127) ptr[3*x+2]-=256;
-            
-        }
-    }
+    // сборка нового изображения
+    IplImage * newImage = collectImageFromArray(image,arrImage);
     
-    
-    cvSaveImage("/users/madmoron/Desktop/img2.jpg", imageCopy, 0);
-    
-    
-    
-    
-    
-    
+    // сохранение изображения
+    cvSaveImage("/users/madmoron/Desktop/img2.jpg", newImage, 0);
     
     // освобождение ресурсов
     cvReleaseImage(& image);
-    cvReleaseImage(& imageCopy);
+    cvReleaseImage(& newImage);
     
     // удаляем окно
     //cvDestroyWindow("original");
