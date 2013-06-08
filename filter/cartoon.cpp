@@ -11,7 +11,13 @@
 #define COUNT_OF_COLORS     255
 #define COUNT_OF_CHANNELS   3
 
-        
+CartoonParameters Cartoon::parameters =
+{
+    5,
+    0.9,
+    0.15
+};
+
 float ** Cartoon::GaussianFunction(float sigma,int radius)
 {
     int size=2*radius+1;
@@ -28,7 +34,8 @@ float ** Cartoon::GaussianFunction(float sigma,int radius)
     return GaussianMatrix;
 }
 
-int ** Cartoon::Histogram(int *** arrImage, int height, int width) {
+int ** Cartoon::Histogram(int *** arrImage, int height, int width)
+{
     int ** HistogramArray=new int * [COUNT_OF_COLORS];
     
     for (int i=0; i<COUNT_OF_COLORS; i++) {
