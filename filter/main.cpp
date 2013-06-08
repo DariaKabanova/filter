@@ -10,6 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "cartoon.h"
+#include <string.h>
 
 #define COUNT_OF_CHANNELS   3 // Количество каналов цветов
 
@@ -71,28 +72,49 @@ int main(int argc, const char * argv[])
     if (!image) return -1; // Если изображение не найдено, то возвращается код ошибки
     
     /* отображание окна с изображением
-     // окно для отображения картинки
-     cvNamedWindow("original",CV_WINDOW_AUTOSIZE);
+    // окно для отображения картинки
+    cvNamedWindow("original",CV_WINDOW_AUTOSIZE);
+    
+    // показываем картинку
+    cvShowImage("original",image);
      
-     // показываем картинку
-     cvShowImage("original",image);
-     
-     // ждём нажатия клавиши
-     cvWaitKey(0);
-     */
+    // ждём нажатия клавиши
+    cvWaitKey(0);
+    */
     
     // получение массива с цветами всех пикселей
     int *** arrImage = getImageArray(image);
     
-    // применение фильтра
-    Cartoon::parameters={4,0.9,0.2};
+    // диаглог с пользователем: настройка фильтра
+    char answer='n';
+    printf("Настраивать фильтр [y/n]? ");
+    scanf("%c",&answer);
+    if (answer=='y' || answer=='Y') {
+        int maskRadius;
+        printf("Введите радиус окресности пикселя для сравнения интенсивности ");
+        scanf("%d",&maskRadius);
+        float threshold;
+        printf("Введите порог относительной разности интенсивности ");
+        scanf("%f",&threshold);
+        float ramp;
+        printf("Введите сумму отностительной разности интенсивности до полного черного ");
+        scanf("%f",&ramp);
+        Cartoon::parameters={maskRadius,threshold,ramp};
+    }
+    
+    // применение фильтра    
     Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
     
     // сборка нового изображения
     IplImage * newImage = collectImageFromArray(image,arrImage);
     
-    // сохранение изображения
-    cvSaveImage("/users/madmoron/Desktop/img2.jpg", newImage, 0);
+    // сохранение изображения в формате: имя исходного файла+"2"
+    cv::string tempName=(cv::string)filename;
+    tempName.insert(tempName.length()-4, "2");
+    char * newFileName=new char[tempName.length()];
+    for (int i=0; i<tempName.length(); i++)
+        newFileName[i]=tempName[i];
+    cvSaveImage(newFileName, newImage, 0);
     
     // освобождение ресурсов
     cvReleaseImage(& image);
