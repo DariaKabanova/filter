@@ -11,4 +11,23 @@
 
 #include <iostream>
 
+void hello(void);
+
+
+class Cartoon {
+    //Cartoon();
+    public:
+        static void cartoonFilter(int *** arrImage, int height, int width);
+        static void cartoonFilterWithAverageValues(int *** arrImage, int height, int width);
+    protected:
+        static float ** GaussianFunction(float sigma,int radius);
+        static int ** Histogram(int *** arrImage, int height, int width);
+    
+};
+
+/*
+ @param 
+ */
+//void cartoonFilter(int *** arrImage, int height, int width, int *** newArrImage);
+
 #endif /* defined(__filter__cartoon__) */
