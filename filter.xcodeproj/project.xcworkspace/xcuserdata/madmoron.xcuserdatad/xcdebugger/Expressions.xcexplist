@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Cartoon::Histogram(int***, int, int):cartoon.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "arrImage[i][j][k]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "arrImage">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Cartoon::cartoonFilter(int***, int, int):cartoon.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "arrImage[i][l][m]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
