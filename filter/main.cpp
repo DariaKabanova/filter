@@ -101,15 +101,19 @@ int main(int argc, const char * argv[])
             int blurRadius;
             printf("Введите радиус размытия ");
             scanf("%d",&blurRadius);
-            Cartoon::parameters={maskRadius,threshold,ramp,sigma,blurRadius};
+            Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height, maskRadius, threshold, ramp, sigma, blurRadius);
         }
-        else Cartoon::parameters={maskRadius,threshold,ramp};
+        else if (filter==2) Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height, maskRadius, threshold, ramp);
+        else return 2; // Если неверно задан фильтр, то возвращается код ошибки
     }
-    
-    // применение фильтра    
-    if (filter==1) Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height);
-    else if (filter==2) Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
-    else return 2; // Если неверно задан фильтр, то возвращается код ошибки
+    else {
+        printf("Выбор фильтра:\n1:с размытием по Гауссу\n2:с усреднением значений ");
+        scanf("%d",&filter);
+        // применение фильтра    
+        if (filter==1) Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height);
+        else if (filter==2) Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
+        else return 2; // Если неверно задан фильтр, то возвращается код ошибки
+    }
     
     // сборка нового изображения
     IplImage * newImage = collectImageFromArray(image,arrImage);

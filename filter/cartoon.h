@@ -34,6 +34,8 @@ public:
      */
     static void cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width);
     
+    static void cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius);
+    
     /* Cartoon-алгоритм с вычислением средних значений
      * arrImage массив с исходными цветами пикселей
      * height   количество пикселей в высоту изображения
@@ -41,10 +43,12 @@ public:
      */
     static void cartoonFilterWithAverageValues(int *** arrImage, int height, int width);
     
+    static void cartoonFilterWithAverageValues(int *** arrImage, int height, int width,  int maskRadius, float threshold, float ramp);
+    
 protected:
     
     /* Нахождение значений функции Гаусса */
-    static float * GaussianFunction();
+    static float * GaussianFunction(float sigma, int blurRadius);
     
     /* Нахождение гистограммы изображения
      * arrImage массив с исходными цветами пикселей

@@ -54,12 +54,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "33"
-         endingLineNumber = "33"
-         landmarkName = "Cartoon::GaussianFunction()"
+         startingLineNumber = "31"
+         endingLineNumber = "31"
+         landmarkName = "Cartoon::GaussianFunction(float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -67,12 +67,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "64"
-         endingLineNumber = "64"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "62"
+         endingLineNumber = "62"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -80,11 +80,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/main.cpp"
-         timestampString = "392509795.537849"
+         timestampString = "392511294.312181"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "134"
-         endingLineNumber = "134"
+         startingLineNumber = "138"
+         endingLineNumber = "138"
          landmarkName = "main(int argc, const char * argv[])"
          landmarkType = "7">
       </FileBreakpoint>
@@ -106,12 +106,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "186"
-         endingLineNumber = "186"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "181"
+         endingLineNumber = "181"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -119,12 +119,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "213"
-         endingLineNumber = "213"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "208"
+         endingLineNumber = "208"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -132,12 +132,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "163"
-         endingLineNumber = "163"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "158"
+         endingLineNumber = "158"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -145,12 +145,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "108"
-         endingLineNumber = "108"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "103"
+         endingLineNumber = "103"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -158,12 +158,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "108"
-         endingLineNumber = "108"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "103"
+         endingLineNumber = "103"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -171,12 +171,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "107"
-         endingLineNumber = "107"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "102"
+         endingLineNumber = "102"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -184,12 +184,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "87"
-         endingLineNumber = "87"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "82"
+         endingLineNumber = "82"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -197,12 +197,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "filter/cartoon.cpp"
-         timestampString = "392508900.948603"
+         timestampString = "392511114.157947"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "110"
-         endingLineNumber = "110"
-         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width)"
+         startingLineNumber = "105"
+         endingLineNumber = "105"
+         landmarkName = "Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius)"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -228,6 +228,32 @@
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "83"
          endingLineNumber = "83"
+         landmarkName = "main(int argc, const char * argv[])"
+         landmarkType = "7">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "filter/main.cpp"
+         timestampString = "392511221.194664"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "81"
+         endingLineNumber = "81"
+         landmarkName = "main(int argc, const char * argv[])"
+         landmarkType = "7">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "filter/main.cpp"
+         timestampString = "392511226.22752"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "79"
+         endingLineNumber = "79"
          landmarkName = "main(int argc, const char * argv[])"
          landmarkType = "7">
       </FileBreakpoint>

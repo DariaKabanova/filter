@@ -21,10 +21,8 @@ CartoonParameters Cartoon::parameters =
     3       /* blurRadius   */
 };
 
-float * Cartoon::GaussianFunction()
+float * Cartoon::GaussianFunction(float sigma, int blurRadius)
 {
-    float sigma=parameters.sigma;
-    int blurRadius=parameters.blurRadius;
     int size=2*blurRadius+1;
     float coeff = 1.0f/(2.0f*(float)M_PI*sigma*sigma);
     float * GaussianMatrix=new float[size];
@@ -60,13 +58,10 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
     Интенсивность цвета текущего пикселя умножается на mult.
     Таким образом, алгоритм ищет самые темные области на изображении и затемняет их больше.
 */
-void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width) {
-    int maskRadius=parameters.maskRadius;
-    float threshold=parameters.threshold;
-    float ramp=parameters.ramp;
-    int blurRadius=parameters.blurRadius;
+void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width, int maskRadius, float threshold, float ramp, float sigma, int blurRadius) {
     
-    float * GaussianMatrix=GaussianFunction();
+    
+    float * GaussianMatrix=GaussianFunction(sigma,blurRadius);
     
     // Горизонтальное размытие
     for (int j=0; j<height; j++) {
@@ -223,6 +218,10 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
     
 }
 
+void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width) {
+    cartoonFilterWithGaussianBlur(arrImage, height, width, parameters.maskRadius, parameters.threshold, parameters.ramp, parameters.sigma, parameters.blurRadius);
+}
+
 /*  Cartoon-алгоритм с использованием средних значений
     Упрощенный алгоритм, которые находит средние значения в радиусе maskRadius.
     Ramp - сумма относительной разности интенсивности до полного черного, в данном случае задается пользователем.
@@ -231,10 +230,7 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
     Интенсивность цвета текущего пикселя умножается на mult.
     Таким образом, алгоритм ищет самые темные области на изображении и затемняет их больше.
 */
-void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {
-    int maskRadius=parameters.maskRadius;
-    float threshold=parameters.threshold;
-    float ramp=parameters.ramp;
+void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width,  int maskRadius, float threshold, float ramp) {
     
     for(int x = 0; x < width; x++) {
         for(int y = 0; y < height; y++){
@@ -270,4 +266,8 @@ void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int w
             delete avr;
         }
     }
+}
+
+void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {
+    cartoonFilterWithAverageValues(arrImage, height, width, parameters.maskRadius, parameters.threshold, parameters.ramp);
 }
