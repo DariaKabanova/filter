@@ -48,8 +48,6 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
     for (int i=0; i<width; i++)
         for (int j=0; j<height; j++)
             for (int k=0; k<COUNT_OF_CHANNELS; k++) {
-                if (arrImage[i][j][k]<0) arrImage[i][j][k]=0;
-                else if (arrImage[i][j][k]>255) arrImage[i][j][k]=255;
                 HistogramArray[arrImage[i][j][k]][k]++;
             }
     
@@ -62,9 +60,9 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     int maskRadius=parameters.maskRadius;
     float threshold=parameters.threshold;
     float ramp=parameters.ramp;
-    int blurRadius=3;
+    int blurRadius=2;
     
-    float ** GaussianMatrix=GaussianFunction(0.5,blurRadius);
+    float ** GaussianMatrix=GaussianFunction(0.43,blurRadius);
     
     int center = maskRadius / 2 + 1;
 
@@ -110,10 +108,58 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
         }
         for (int i=0; i<width; i++)
             for (int m=0; m<COUNT_OF_CHANNELS; m++)
-                arrImage[i][j][m]=tempRow[i][m];
+                if (tempRow[i][m]<0) arrImage[i][j][m]=0;
+                else if (tempRow[i][m]>255) arrImage[i][j][m]=255;
+                else arrImage[i][j][m]=tempRow[i][m];
         delete tempRow;
     }
     
+    // Вертикальное размытие
+    for (int i=0; i<width; i++) {
+        int ** tempColumn=new int * [height];// временная строка
+        for (int j=0; j<height; j++) {
+            // Вычисление суммы использованных коэффициентов для нормализации
+            float sum[COUNT_OF_CHANNELS];
+            int pixel[COUNT_OF_CHANNELS];
+            memset(pixel,0,COUNT_OF_CHANNELS * sizeof(int));
+            memset(sum,0,COUNT_OF_CHANNELS * sizeof(int));
+            
+            // Проход вокруг пикселя [i][j]
+            for (int k=-blurRadius; k<=blurRadius; k++) {
+                // l - индекс другого пикселя который вносит вклад
+                int l=j+k;
+                if (l>=0 && l<height) {
+                    for (int m=0; m<COUNT_OF_CHANNELS; m++) {
+                        pixel[m]+=(float)arrImage[i][l][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        sum[m]+=arrImage[i][l][m];
+                    }
+                }
+                else {// Область размытия выходит за рамки изображения
+                    for (int m=0; m<COUNT_OF_CHANNELS; m++) {
+                        pixel[m]+=(float)arrImage[i][j][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        sum[m]+=arrImage[i][j][m];
+                    }
+                }
+            }
+            // Нормализация: сумма использованных коэффициентов должна быть равна 1
+            for (int m=0; m<COUNT_OF_CHANNELS; m++) {
+                
+                pixel[m]=(float)(pixel[m]*pixel[m]*(2*blurRadius+1))/sum[m];
+                if ((float)pixel[m]*(2*blurRadius+1)/sum[m]>=0.5)
+                    pixel[m]++;
+            }
+            
+            tempColumn[j]=new int[COUNT_OF_CHANNELS];
+            for (int m=0; m<COUNT_OF_CHANNELS; m++)
+                tempColumn[j][m]=pixel[m];
+        }
+        for (int j=0; j<height; j++)
+            for (int m=0; m<COUNT_OF_CHANNELS; m++)
+                if (tempColumn[j][m]<0) arrImage[i][j][m]=0;
+                else if (tempColumn[j][m]>255) arrImage[i][j][m]=255;
+                else arrImage[i][j][m]=tempColumn[j][m];
+        delete tempColumn;
+    }
     
     
     
@@ -170,6 +216,8 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
             }
         }
     }
+    
+    delete GaussianMatrix;
     
 }
 
