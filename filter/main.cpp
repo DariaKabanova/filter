@@ -68,23 +68,18 @@ int main(int argc, const char * argv[])
     // получаем картинку
     image = cvLoadImage(filename,1);
     
-    if (!image) return -1; // Если изображение не найдено, то возвращается код ошибки
+    if (!image) return 1; // Если изображение не найдено, то возвращается код ошибки
     
-    /* отображание окна с изображением
-    // окно для отображения картинки
-    cvNamedWindow("original",CV_WINDOW_AUTOSIZE);
     
-    // показываем картинку
-    cvShowImage("original",image);
-     
-    // ждём нажатия клавиши
-    cvWaitKey(0);
-    */
     
     // получение массива с цветами всех пикселей
     int *** arrImage = getImageArray(image);
     
     // диаглог с пользователем: настройка фильтра
+    char filter='1';
+    //printf("Выбор фильтра:\n1:с размытием по Гауссу\n2:с усреднением значений\n");
+    //scanf("%c",&filter);
+   
     char answer='n';
     printf("Настраивать фильтр [y/n]? ");
     scanf("%c",&answer);
@@ -98,14 +93,36 @@ int main(int argc, const char * argv[])
         float ramp;
         printf("Введите сумму отностительной разности интенсивности до полного черного ");
         scanf("%f",&ramp);
-        Cartoon::parameters={maskRadius,threshold,ramp};
+        if (filter=='1') {
+            float sigma;
+            printf("Введите значение среднеквадратического отклонения функции Гаусса ");
+            scanf("%f",&sigma);
+            int blurRadius;
+            printf("Введите радиус размытия ");
+            scanf("%d",&blurRadius);
+            Cartoon::parameters={maskRadius,threshold,ramp,sigma,blurRadius};
+        }
+        else Cartoon::parameters={maskRadius,threshold,ramp};
     }
     
     // применение фильтра    
-    Cartoon::cartoonFilter(arrImage, image->width, image->height);
+    if (filter=='1') Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height);
+    else if (filter=='2') Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
+    else return 2; // Если неверно задан фильтр, то возвращается код ошибки
     
     // сборка нового изображения
     IplImage * newImage = collectImageFromArray(image,arrImage);
+    
+    /* отображание окна с изображением
+    // окно для отображения картинки
+    cvNamedWindow("original",CV_WINDOW_AUTOSIZE);
+     
+    // показываем картинку
+    cvShowImage("original",newImage);
+     
+    // ждём нажатия клавиши
+    cvWaitKey(0);
+    */
     
     // сохранение изображения в формате: имя исходного файла+"2"
     cv::string tempName=(cv::string)filename;

@@ -15,7 +15,8 @@ CartoonParameters Cartoon::parameters =
 {
     5,      /* maskRadius   */
     1.0,    /* threshold    */
-    0.9,    /* ramp         */
+    0.7,   /* ramp         */
+    /* Для фильтра с вычислением средних значений лучше использовать значение ramp меньше, например, 0.15 */
     0.45,   /* sigma        */
     3       /* blurRadius   */
 };
@@ -32,7 +33,7 @@ float * Cartoon::GaussianFunction()
     return GaussianMatrix;
 }
 
-/*  Гистограмма — это график распределения полутонов изображения, в котором по горизонтальной оси представлена яркость, а по вертикали — относительное число пикселов с данным значением яркости.
+/*  Гистограмма — это график распределения полутонов изображения, в котором по горизонтальной оси представлена яркость,       а по вертикали — относительное число пикселов с данным значением яркости.
     В данном случае гистограмма - массивы каждой составляющей RGB со значениями яркости 0..255 */
 int ** Cartoon::Histogram(int *** arrImage, int height, int width)
 {
@@ -52,7 +53,13 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
 }
 
 /*  Cartoon-алгоритм с использованием размытия по Гауссу
-    
+    Сначала производится размытие изображения при помощи фильтра Гаусса. Фильтр Гаусса проходит сначала по горизонтали, а потом по вертикали. 
+    Далее находится гистограмма изображения, при помощи которой вычисляется ramp. Ramp - сумма относительной разности интенсивности до полного черного.
+    Затем определяется относительная интенсивность пикселя diff = интенсивность пикселя / среднее значение в радиусе maskRadius.
+    Если относительная разница меньше порогового значения diff < threshold, то множитель интенсивности mult = (ramp - MIN (ramp, (threshold - diff))).
+    Интенсивность цвета текущего пикселя умножается на mult.
+    Таким образом, алгоритм ищет самые темные области на изображении и затемняет их больше.
+*/
 void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width) {
     int maskRadius=parameters.maskRadius;
     float threshold=parameters.threshold;
@@ -155,8 +162,7 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
         delete tempColumn;
     }
     
-    
-    
+    // Нахождение гистограммы изображения
     int ** hist=Histogram(arrImage, height, width);
     
     float ramps[COUNT_OF_CHANNELS];
@@ -177,17 +183,14 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
         }
     }
     
-    for(int x = 0; x < width; x++) {
-        
-        
-        
+    for(int x = 0; x < width; x++) {     
         for(int y = 0; y < height; y++){
-            
             int i = 0;
             
             float * avr=new float[COUNT_OF_CHANNELS];
             memset(avr,0.0,COUNT_OF_CHANNELS*sizeof(float));
             
+            // Нахождение средних значений
             for(int iX = x; i < maskRadius; ++i, ++iX){
                 if  (iX==width) break;
                 int j = 0;
@@ -198,6 +201,7 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
                 }
             }
             
+            // Поиск множителя интенсивности цвета
             for (int k=0; k<COUNT_OF_CHANNELS; k++) {
                 avr[k]/=maskRadius*maskRadius;
                 float diff=arrImage[x][y][k]/avr[k];
@@ -208,80 +212,62 @@ void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int wi
                 }
                 arrImage[x][y][k]=(int)(arrImage[x][y][k]*mult);
             }
+            
+            delete avr;
         }
     }
     
+    delete hist;
     delete GaussianMatrix;
     
+    
 }
 
-float Cartoon::computeRamp(int ** arrRow) {
-    float diff_black=parameters.ramp;
-    
-    
-    float ramp=diff_black;
-    return ramp;
-}
-
-
+/*  Cartoon-алгоритм с использованием средних значений
+    Упрощенный алгоритм, которые находит средние значения в радиусе maskRadius.
+    Ramp - сумма относительной разности интенсивности до полного черного, в данном случае задается пользователем.
+    Сначала определяется относительная интенсивность пикселя diff = интенсивность пикселя / среднее значение в радиусе maskRadius.
+    Если относительная разница меньше порогового значения diff < threshold, то множитель интенсивности mult = (ramp - MIN (ramp, (threshold - diff))).
+    Интенсивность цвета текущего пикселя умножается на mult.
+    Таким образом, алгоритм ищет самые темные области на изображении и затемняет их больше.
+*/
 void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {
     int maskRadius=parameters.maskRadius;
     float threshold=parameters.threshold;
     float ramp=parameters.ramp;
     
-    //Добавить прохождение до конца
-    
     for(int x = 0; x < width; x++) {
         for(int y = 0; y < height; y++){
     
             int i = 0;
-            double sumR = 0, sumB = 0, sumG = 0;
-
+            
+            float * avr=new float[COUNT_OF_CHANNELS];
+            memset(avr,0.0,COUNT_OF_CHANNELS*sizeof(float));
+            
+            // Нахождение средних значений
             for(int iX = x; i < maskRadius; ++i, ++iX){
                 if  (iX==width) break;
                 int j = 0;
                 for(int iY = y; j < maskRadius; ++j, ++iY){
                     if (iY==height) break;
-                    sumR += arrImage[iX][iY][2];
-                    sumB += arrImage[iX][iY][1];
-                    sumG += arrImage[iX][iY][0];
+                    for (int k=0; k<COUNT_OF_CHANNELS; k++)
+                        avr[k] += arrImage[iX][iY][k];
                 }
             }
             
+            // Поиск множителя интенсивности цвета
+            for (int k=0; k<COUNT_OF_CHANNELS; k++) {
+                avr[k]/=maskRadius*maskRadius;
+                float diff=arrImage[x][y][k]/avr[k];
+                float mult=1.0;
+                if (diff<threshold) {
+                    if (ramp==0.0) mult=0.0;
+                    else mult=(ramp - fmin(ramp,(threshold - diff)))/ramp;
+                }
+                arrImage[x][y][k]=(int)(arrImage[x][y][k]*mult);
+            }
             
-            sumR /= maskRadius*maskRadius;
-                sumB /= maskRadius*maskRadius;
-                sumG /= maskRadius*maskRadius;
-                
-                double red = arrImage[x][y][2],
-                blue = arrImage[x][y][1],
-                green = arrImage[x][y][0];
-
-                double koeffR = red / sumR,
-                koeffB = blue / sumB,
-                koeffG = green / sumG;
-                
-                if(koeffR < threshold)
-                    red *= ((ramp - fmin(ramp,(threshold - koeffR)))/ramp);
-
-                if(koeffB < threshold)
-                    blue *= ((ramp - fmin(ramp,(threshold - koeffB)))/ramp);
-
-                if(koeffG < threshold)
-                    green *= ((ramp - fmin(ramp,(threshold - koeffG)))/ramp);
-                
-                arrImage[x][y][2]=(int)red;
-                arrImage[x][y][1]=(int)blue;
-                arrImage[x][y][0]=(int)green;
-                
-                //if (iX>100) break;
-            
-            
-            
+            delete avr;
         }
     }
-
-
-    
-    
 }

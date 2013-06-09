@@ -22,7 +22,9 @@ typedef struct
 
 
 class Cartoon {
+    
 public:
+    
     static CartoonParameters parameters; /* структура с параметрами фильтра */
     
     /* Cartoon-алгоритм с использованием размытия по Гауссу
@@ -32,7 +34,11 @@ public:
      */
     static void cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width);
     
-    
+    /* Cartoon-алгоритм с вычислением средних значений
+     * arrImage массив с исходными цветами пикселей
+     * height   количество пикселей в высоту изображения
+     * width    количество пикселей в длину изображения
+     */
     static void cartoonFilterWithAverageValues(int *** arrImage, int height, int width);
     
 protected:
@@ -46,8 +52,6 @@ protected:
      * width    количество пикселей в длину изображения
      */
     static int ** Histogram(int *** arrImage, int height, int width);
-    
-    static float computeRamp(int ** arrRow);
 };
 
 
