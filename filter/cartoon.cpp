@@ -15,7 +15,7 @@ CartoonParameters Cartoon::parameters =
 {
     5,      /* maskRadius   */
     0.9,    /* threshold    */
-    0.15    /* ramp         */ 
+    0.15    /* ramp         */
 };
 
 float ** Cartoon::GaussianFunction(float sigma,int radius)
@@ -91,56 +91,31 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     //Добавить прохождение до конца
     
     for(int x = 0; x < width; x++) {
+        
         for(int y = 0; y < height; y++){
             
             int i = 0;
-            double sumR = 0, sumB = 0, sumG = 0;
+            
+            float * avr=new float[COUNT_OF_CHANNELS];
+            memset(avr,0.0,COUNT_OF_CHANNELS*sizeof(float));
             
             for(int iX = x; i < maskRadius; ++i, ++iX){
                 if  (iX==width) break;
                 int j = 0;
                 for(int iY = y; j < maskRadius; ++j, ++iY){
                     if (iY==height) break;
-                    sumR += arrImage[iX][iY][2];
-                    sumB += arrImage[iX][iY][1];
-                    sumG += arrImage[iX][iY][0];
+                    for (int k=0; k<COUNT_OF_CHANNELS; k++) 
+                        avr[k] += arrImage[iX][iY][k];
                 }
             }
             
-            
-            sumR /= maskRadius*maskRadius;
-            sumB /= maskRadius*maskRadius;
-            sumG /= maskRadius*maskRadius;
-            
-            double red = arrImage[x][y][2],
-            blue = arrImage[x][y][1],
-            green = arrImage[x][y][0];
-            
-            double koeffR = red / sumR,
-            koeffB = blue / sumB,
-            koeffG = green / sumG;
-            
-            if(koeffR < threshold) {
-                ramp=0.01;
-                red *= ((ramp - fmin(ramp,(threshold - koeffR)))/ramp);
+            for (int k=0; k<COUNT_OF_CHANNELS; k++) {
+                avr[k]/=maskRadius*maskRadius;
+                float diff=arrImage[x][y][k]/avr[k];
+                if (diff<threshold) {
+                    arrImage[x][y][k]=(int)(arrImage[x][y][k]*(ramp - fmin(ramp,(threshold - diff)))/ramp);
+                }
             }
-            
-            
-            if(koeffB < threshold) {
-                ramp=0.02;
-                blue *= ((ramp - fmin(ramp,(threshold - koeffB)))/ramp);
-            }
-                
-            
-            if(koeffG < threshold) {
-                ramp=0.03;
-                green *= ((ramp - fmin(ramp,(threshold - koeffG)))/ramp);
-            }
-                
-            
-            arrImage[x][y][2]=(int)red;
-            arrImage[x][y][1]=(int)blue;
-            arrImage[x][y][0]=(int)green;
             
             //if (iX>100) break;
             
@@ -151,6 +126,13 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     
 }
 
+float computeRamp() {
+    float ramp;
+    
+    
+    
+    return ramp;
+}
 
 
 void Cartoon::cartoonFilterWithAverageValues(int *** arrImage, int height, int width) {

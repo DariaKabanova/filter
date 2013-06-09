@@ -102,14 +102,14 @@ int main(int argc, const char * argv[])
     }
     
     // применение фильтра    
-    Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
+    Cartoon::cartoonFilter(arrImage, image->width, image->height);
     
     // сборка нового изображения
     IplImage * newImage = collectImageFromArray(image,arrImage);
     
     // сохранение изображения в формате: имя исходного файла+"2"
     cv::string tempName=(cv::string)filename;
-    tempName.insert(tempName.length()-4, "2");
+    tempName.insert(tempName.length()-4, "_filtered");
     char * newFileName=new char[tempName.length()];
     for (int i=0; i<tempName.length(); i++)
         newFileName[i]=tempName[i];
