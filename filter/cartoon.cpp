@@ -8,14 +8,14 @@
 
 #include "cartoon.h"
 #include <math.h>
-#define COUNT_OF_COLORS     255
+#define COUNT_OF_COLORS     256
 #define COUNT_OF_CHANNELS   3
 
 CartoonParameters Cartoon::parameters =
 {
     5,      /* maskRadius   */
-    0.9,    /* threshold    */
-    0.15    /* ramp         */
+    1.0,    /* threshold    */
+    0.9    /* ramp         */
 };
 
 float ** Cartoon::GaussianFunction(float sigma,int radius)
@@ -40,13 +40,15 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
     
     for (int i=0; i<COUNT_OF_COLORS; i++) {
         HistogramArray[i]=new int[COUNT_OF_CHANNELS];
-        memset(HistogramArray, 0, COUNT_OF_COLORS * sizeof(int));
+        memset(HistogramArray[i], 0, COUNT_OF_CHANNELS * sizeof(int));
     }
     
     for (int i=0; i<width; i++)
         for (int j=0; j<height; j++)
             for (int k=0; k<COUNT_OF_CHANNELS; k++)
                 HistogramArray[arrImage[i][j][k]][k]++;
+    
+    
     
     return HistogramArray;
 }
@@ -56,11 +58,13 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     float threshold=parameters.threshold;
     float ramp=parameters.ramp;
     
-    float ** GaussianMatrix=GaussianFunction(0.9,maskRadius);
+    float ** GaussianMatrix=GaussianFunction(7,maskRadius);
     
     int center = maskRadius / 2 + 1;
     
-    // Проход по строкам
+    // Горизонтальное размытие
+    
+    
     
     /*for (int i=0; i<width; i++) {
         for (int x=i-maskRadius-1; x<i+maskRadius; x++) {
@@ -68,12 +72,14 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
                 for (int j=0; j<height; j++) {
                     for (int y=j-maskRadius-1; y<j+maskRadius; y++) {
                         if (y>=0 && y<height) {
-                            float diffR=GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];//*arrImage[x][y][2];
-                            if (diffR<threshold) {
-                                arrImage[x][y][2]*=((ramp - fmin(ramp,(threshold - diffR)))/ramp);
+                            //float diffR=GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];//*arrImage[x][y][2];
+                            //if (diffR<threshold) {
+                            arrImage[x][y][2]-= arrImage[x][y][2]*GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];
+                            arrImage[x][y][1]-= arrImage[x][y][1]*GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];
+                            arrImage[x][y][0]-= arrImage[x][y][0]*GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];
                                 //printf("%f ",((ramp - fmin(ramp,(threshold - diffR)))/ramp));
-                            }
-                            diffR=arrImage[x][y][2];
+                            //}
+                            /*diffR=arrImage[x][y][2];
                             float diffG=GaussianMatrix[x-i+maskRadius+1][y-j+maskRadius+1];//*arrImage[x][y][1];
                             if (diffG<threshold)
                                 arrImage[x][y][1]*=((ramp - fmin(ramp,(threshold - diffG)))/ramp);
@@ -90,7 +96,29 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
     
     //Добавить прохождение до конца
     
+    int ** hist=Histogram(arrImage, height, width);
+    
+    float ramps[COUNT_OF_CHANNELS];
+    memset(ramps, 0.0, COUNT_OF_CHANNELS * sizeof(float));
+    
+    for (int k=0; k<COUNT_OF_CHANNELS; k++) {
+        int count=0;
+        for (int i=0; i<COUNT_OF_COLORS; i++) {
+            count+=hist[i][k];
+        }
+        int sum=0;
+        for (int i=0; i<COUNT_OF_COLORS; i++) {
+            sum+=hist[i][k];
+            if ((float)sum/(float)count>ramp) {
+                ramps[k]=1.0-(float)i/(float)COUNT_OF_COLORS;
+                break;
+            }
+        }
+    }
+    
     for(int x = 0; x < width; x++) {
+        
+        
         
         for(int y = 0; y < height; y++){
             
@@ -112,25 +140,23 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
             for (int k=0; k<COUNT_OF_CHANNELS; k++) {
                 avr[k]/=maskRadius*maskRadius;
                 float diff=arrImage[x][y][k]/avr[k];
+                float mult=1.0;
                 if (diff<threshold) {
-                    arrImage[x][y][k]=(int)(arrImage[x][y][k]*(ramp - fmin(ramp,(threshold - diff)))/ramp);
+                    if (ramps[k]==0.0) mult=0.0;
+                    else mult=(ramps[k] - fmin(ramps[k],(threshold - diff)))/ramps[k];
                 }
+                arrImage[x][y][k]=(int)(arrImage[x][y][k]*mult);
             }
-            
-            //if (iX>100) break;
-            
-            
-            
         }
     }
     
 }
 
-float computeRamp() {
-    float ramp;
+float Cartoon::computeRamp(int ** arrRow) {
+    float diff_black=parameters.ramp;
     
     
-    
+    float ramp=diff_black;
     return ramp;
 }
 

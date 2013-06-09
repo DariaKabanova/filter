@@ -27,7 +27,8 @@ public:
     
 protected:
     static float ** GaussianFunction(float sigma,int radius);
-    static int ** Histogram(int *** arrImage, int height, int width);    
+    static int ** Histogram(int *** arrImage, int height, int width);
+    static float computeRamp(int ** arrRow);
 };
 
 

@@ -90,7 +90,7 @@ int main(int argc, const char * argv[])
     scanf("%c",&answer);
     if (answer=='y' || answer=='Y') {
         int maskRadius;
-        printf("Введите радиус окресности пикселя для сравнения интенсивности ");
+        printf("Введите радиус окрестности пикселя для сравнения интенсивности ");
         scanf("%d",&maskRadius);
         float threshold;
         printf("Введите порог относительной разности интенсивности ");
