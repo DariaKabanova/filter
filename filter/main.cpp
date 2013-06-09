@@ -76,13 +76,12 @@ int main(int argc, const char * argv[])
     int *** arrImage = getImageArray(image);
     
     // диаглог с пользователем: настройка фильтра
-    char filter='1';
-    //printf("Выбор фильтра:\n1:с размытием по Гауссу\n2:с усреднением значений\n");
-    //scanf("%c",&filter);
+    int filter=1;
    
     char answer='n';
     printf("Настраивать фильтр [y/n]? ");
     scanf("%c",&answer);
+
     if (answer=='y' || answer=='Y') {
         int maskRadius;
         printf("Введите радиус окрестности пикселя для сравнения интенсивности ");
@@ -93,7 +92,9 @@ int main(int argc, const char * argv[])
         float ramp;
         printf("Введите сумму отностительной разности интенсивности до полного черного ");
         scanf("%f",&ramp);
-        if (filter=='1') {
+        printf("Выбор фильтра:\n1:с размытием по Гауссу\n2:с усреднением значений ");
+        scanf("%d",&filter);
+        if (filter==1) {
             float sigma;
             printf("Введите значение среднеквадратического отклонения функции Гаусса ");
             scanf("%f",&sigma);
@@ -106,8 +107,8 @@ int main(int argc, const char * argv[])
     }
     
     // применение фильтра    
-    if (filter=='1') Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height);
-    else if (filter=='2') Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
+    if (filter==1) Cartoon::cartoonFilterWithGaussianBlur(arrImage, image->width, image->height);
+    else if (filter==2) Cartoon::cartoonFilterWithAverageValues(arrImage, image->width, image->height);
     else return 2; // Если неверно задан фильтр, то возвращается код ошибки
     
     // сборка нового изображения
