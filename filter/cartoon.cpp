@@ -15,27 +15,25 @@ CartoonParameters Cartoon::parameters =
 {
     5,      /* maskRadius   */
     1.0,    /* threshold    */
-    0.9    /* ramp         */
+    0.9,    /* ramp         */
+    0.45,   /* sigma        */
+    3       /* blurRadius   */
 };
 
-float ** Cartoon::GaussianFunction(float sigma,int radius)
+float * Cartoon::GaussianFunction()
 {
-    int size=2*radius+1;
+    float sigma=parameters.sigma;
+    int blurRadius=parameters.blurRadius;
+    int size=2*blurRadius+1;
     float coeff = 1.0f/(2.0f*(float)M_PI*sigma*sigma);
-    float ** GaussianMatrix=new float*[size];
+    float * GaussianMatrix=new float[size];
     for (int i = 0; i < size; i++)
-    {
-        GaussianMatrix[i]=new float[size];
-        for (int j = 0; j < size; j++)
-        {
-            GaussianMatrix[i][j] = coeff * (float)exp(-(pow(fabs(size/2-i),2)+pow(fabs(size/2-j),2))/(2*sigma*sigma));
-            printf("%f ",GaussianMatrix[i][j]);
-        }
-        printf("\n");
-    }
+        GaussianMatrix[i] = coeff * (float)exp(-(pow(fabs(size/2-i),2)+pow(fabs(size/2-blurRadius),2))/(2*sigma*sigma));
     return GaussianMatrix;
 }
 
+/*  Гистограмма — это график распределения полутонов изображения, в котором по горизонтальной оси представлена яркость, а по вертикали — относительное число пикселов с данным значением яркости.
+    В данном случае гистограмма - массивы каждой составляющей RGB со значениями яркости 0..255 */
 int ** Cartoon::Histogram(int *** arrImage, int height, int width)
 {
     int ** HistogramArray=new int * [COUNT_OF_COLORS];
@@ -47,25 +45,21 @@ int ** Cartoon::Histogram(int *** arrImage, int height, int width)
     
     for (int i=0; i<width; i++)
         for (int j=0; j<height; j++)
-            for (int k=0; k<COUNT_OF_CHANNELS; k++) {
-                HistogramArray[arrImage[i][j][k]][k]++;
-            }
-    
-    
+            for (int k=0; k<COUNT_OF_CHANNELS; k++)
+                HistogramArray[arrImage[i][j][k]][k]++; 
     
     return HistogramArray;
 }
 
-void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
+/*  Cartoon-алгоритм с использованием размытия по Гауссу
+    
+void Cartoon::cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width) {
     int maskRadius=parameters.maskRadius;
     float threshold=parameters.threshold;
     float ramp=parameters.ramp;
-    int blurRadius=2;
+    int blurRadius=parameters.blurRadius;
     
-    float ** GaussianMatrix=GaussianFunction(0.43,blurRadius);
-    
-    int center = maskRadius / 2 + 1;
-
+    float * GaussianMatrix=GaussianFunction();
     
     // Горизонтальное размытие
     for (int j=0; j<height; j++) {
@@ -83,13 +77,13 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
                 int l=i+k;
                 if (l>=0 && l<width) {
                     for (int m=0; m<COUNT_OF_CHANNELS; m++) {
-                        pixel[m]+=(float)arrImage[l][j][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        pixel[m]+=(float)arrImage[l][j][m]*GaussianMatrix[k+blurRadius];
                         sum[m]+=arrImage[l][j][m];
                     }
                 }
                 else {// Область размытия выходит за рамки изображения
                     for (int m=0; m<COUNT_OF_CHANNELS; m++) {
-                        pixel[m]+=(float)arrImage[i][j][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        pixel[m]+=(float)arrImage[i][j][m]*GaussianMatrix[k+blurRadius];
                         sum[m]+=arrImage[i][j][m];
                     }
                 }
@@ -130,13 +124,13 @@ void Cartoon::cartoonFilter(int *** arrImage, int height, int width) {
                 int l=j+k;
                 if (l>=0 && l<height) {
                     for (int m=0; m<COUNT_OF_CHANNELS; m++) {
-                        pixel[m]+=(float)arrImage[i][l][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        pixel[m]+=(float)arrImage[i][l][m]*GaussianMatrix[k+blurRadius];
                         sum[m]+=arrImage[i][l][m];
                     }
                 }
                 else {// Область размытия выходит за рамки изображения
                     for (int m=0; m<COUNT_OF_CHANNELS; m++) {
-                        pixel[m]+=(float)arrImage[i][j][m]*GaussianMatrix[blurRadius][k+blurRadius];
+                        pixel[m]+=(float)arrImage[i][j][m]*GaussianMatrix[k+blurRadius];
                         sum[m]+=arrImage[i][j][m];
                     }
                 }

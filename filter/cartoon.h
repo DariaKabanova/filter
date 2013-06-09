@@ -13,21 +13,40 @@
 
 typedef struct
 {
-    int     maskRadius; /* радиус окрестности пикселя для сравнения интенсивности        */
+    int     maskRadius; /* радиус окрестности пикселя для сравнения интенсивности */
     float   threshold;  /* порог относительной разности интенсивности */
     float   ramp;       /* сумма относительной разности интенсивности до полного черного */
+    float   sigma;      /* среднеквадратическое отклонение */
+    int     blurRadius; /* радиус размытия */
 } CartoonParameters;
 
 
 class Cartoon {
 public:
-    static CartoonParameters parameters; /* параметры фильтра */
-    static void cartoonFilter(int *** arrImage, int height, int width);
+    static CartoonParameters parameters; /* структура с параметрами фильтра */
+    
+    /* Cartoon-алгоритм с использованием размытия по Гауссу
+     * arrImage массив с исходными цветами пикселей
+     * height   количество пикселей в высоту изображения
+     * width    количество пикселей в длину изображения
+     */
+    static void cartoonFilterWithGaussianBlur(int *** arrImage, int height, int width);
+    
+    
     static void cartoonFilterWithAverageValues(int *** arrImage, int height, int width);
     
 protected:
-    static float ** GaussianFunction(float sigma,int radius);
+    
+    /* Нахождение значений функции Гаусса */
+    static float * GaussianFunction();
+    
+    /* Нахождение гистограммы изображения
+     * arrImage массив с исходными цветами пикселей
+     * height   количество пикселей в высоту изображения
+     * width    количество пикселей в длину изображения
+     */
     static int ** Histogram(int *** arrImage, int height, int width);
+    
     static float computeRamp(int ** arrRow);
 };
 
